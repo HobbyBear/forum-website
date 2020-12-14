@@ -2,11 +2,6 @@ package com.blog.template.service.user;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.lang.Dict;
-import cn.hutool.extra.template.Template;
-import cn.hutool.extra.template.TemplateConfig;
-import cn.hutool.extra.template.TemplateEngine;
-import cn.hutool.extra.template.TemplateUtil;
 import com.blog.template.common.constants.Constant;
 import com.blog.template.common.utils.PageBeanConvertUtil;
 import com.blog.template.dao.RoleDao;
@@ -17,19 +12,14 @@ import com.blog.template.models.role.Role;
 import com.blog.template.models.userinfo.UserInfo;
 import com.blog.template.models.userinfo.UserInfoVo;
 import com.blog.template.models.userinfo.UserSearchVo;
-import com.blog.template.models.userrole.UserRole;
-import com.blog.template.service.mail.MailService;
 import com.blog.template.vo.PageBean;
 import com.blog.template.vo.RegPwdRequest;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +29,6 @@ import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -55,8 +44,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRoleDao userRoleDao;
 
-    @Autowired
-    private MailService mailService;
 
     @Autowired
     private RoleDao roleDao;

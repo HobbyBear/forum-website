@@ -1,7 +1,6 @@
 package com.blog.template.controller.common;
 
 import com.blog.template.models.userinfo.UserInfo;
-import com.blog.template.service.monitor.MonitorService;
 import com.blog.template.service.user.UserService;
 import com.blog.template.vo.LoginRequest;
 import com.blog.template.vo.ResponseMsg;
@@ -28,8 +27,7 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private MonitorService monitorService;
+
 
     @Autowired
     private UserService userService;
@@ -41,7 +39,6 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserInfo userInfo = userService.findByUsername(authentication.getName()).get();
-        monitorService.kickoutCheck(userInfo.getId(),session);
         return ResponseMsg.success200("登陆成功");
     }
 

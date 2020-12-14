@@ -1,4 +1,4 @@
-package com.blog.template.models.forum;
+package com.blog.template.models.category;
 
 
 import lombok.AllArgsConstructor;
@@ -13,15 +13,18 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "forum")
-public class Forum {
+@Table(name = "category")
+public class Category {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "name")
+    private String name;
+
+
+
 
 }

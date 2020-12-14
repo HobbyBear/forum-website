@@ -1,4 +1,4 @@
-package com.blog.template.models.category;
+package com.blog.template.models.topiclikeuser;
 
 
 import lombok.AllArgsConstructor;
@@ -13,18 +13,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "forum_category")
-public class ForumCategory {
+@Table(name = "topic_like_user")
+public class TopicLikeUser {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "user_id")
+    private Long userId;
 
-
-
-
+    @Column(name = "like_status")
+    private int likeStatus;
 }
