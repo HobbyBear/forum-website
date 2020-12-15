@@ -3,11 +3,7 @@ package com.blog.template.exceptions;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 自定义异常
- * @author xch
- * @since 2019/6/12 9:00
- **/
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class CustomerException extends RuntimeException {
@@ -21,15 +17,19 @@ public class CustomerException extends RuntimeException {
     public CustomerException(Integer code, String msg ){
         super(msg);
         this.code = code;
+        this.msg = msg;
     }
 
     public CustomerException(String msg){
         super(msg);
         code = 400;
+        this.msg = msg;
+
     }
     public CustomerException(Integer code,String msg,Object data){
         super(msg);
         this.code = code;
         this.data = data;
+        this.msg = msg;
     }
 }

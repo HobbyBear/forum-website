@@ -6,8 +6,6 @@ import com.blog.template.service.user.UserService;
 import com.blog.template.vo.ResponseMsg;
 import com.blog.template.models.userinfo.UserSearchVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -20,7 +18,6 @@ import java.time.LocalDateTime;
  **/
 @RestController
 @RequestMapping("/sys/user")
-@PreAuthorize("hasAnyRole('ADMIN')")
 public class UserController {
 
     @Autowired
@@ -32,7 +29,6 @@ public class UserController {
         if (userInfo.getId() == null) {
             userInfo.setCreateTime(LocalDateTime.now());
             userInfo.setStatus(Constant.USER.INVOKE);
-            userInfo.setPassword(new BCryptPasswordEncoder().encode(userInfo.getPassword()));
         }
         userService.saveOrUpdateUser(userInfo);
         return ResponseMsg.success200("请求成功");

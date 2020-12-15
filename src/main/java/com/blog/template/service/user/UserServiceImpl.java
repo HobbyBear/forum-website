@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * @author 19624
- */
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -49,52 +46,24 @@ public class UserServiceImpl implements UserService {
     private RoleDao roleDao;
 
 
-    //集群环境下不适用,已修改为redis存储code值，
-//    private Cache<String,Long> cache = CacheBuilder.newBuilder()
-//            .maximumSize(100)
-//            .expireAfterWrite(5,TimeUnit.MINUTES)
-//            .initialCapacity(10)
-//            .removalListener(new RemovalListener<String, Long>() {
-//                @Override
-//                public void onRemoval(RemovalNotification<String, Long> removalNotification) {
-//                    String key = removalNotification.getKey();
-//                    Long value = removalNotification.getValue();
-//                    if (StrUtil.startWith(key,Constant.RedisKey.EMAIL_INVOKE)){
-//                       userDao.findById(value).ifPresent(u->{
-//                           if (u.getStatus().equals(Constant.USER.NOT_INVOKE)){
-//                               userDao.deleteById(value);
-//                           }
-//                       });
-//                    }
-//                }
-//            })
-//            .build();
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void regByPwd(RegPwdRequest regPwdRequest) throws MessagingException {
         if (userDao.findByUsername(regPwdRequest.getUsername()).isPresent()) {
             throw new CustomerException("username has exited !");
         }
-        //创建未激活用户
         UserInfo userInfo = UserInfo
                 .builder()
-                .password(new BCryptPasswordEncoder().encode(regPwdRequest.getPwd()))
+                .password(regPwdRequest.getPwd())
                 .username(regPwdRequest.getUsername())
                 .status(Constant.USER.NOT_INVOKE)
                 .createTime(LocalDateTime.now())
-                //todo  传入默认头像地址
                 .avatar("")
                 .build();
         userDao.save(userInfo);
     }
 
 
-    /**
-     * @Description: 支持动态更新
-     * @Author: xch
-     * @Date: 2019/6/21 8:31
-     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveOrUpdateUser(UserInfo userInfo) {

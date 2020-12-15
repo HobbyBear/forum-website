@@ -12,13 +12,11 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class LoginRequest {
 
-    /**
-     * 手机号或用户名或邮件
-     */
-    @NotBlank(message = "登陆账号不能为空")
-    private String usernameOrEmail;
+
+    @NotBlank(message = "username can not empty")
+    private String username;
 
 
-    @NotBlank(message = "密码不能为空")
+    @NotBlank(message = "password can not empty")
     private String password;
 }

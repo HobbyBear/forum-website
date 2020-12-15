@@ -6,10 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.*;
 
-/**
- * @author xch
- * @since 2019/6/14 8:19
- **/
+
 @Configuration
 @Slf4j
 public class RedisConfig {

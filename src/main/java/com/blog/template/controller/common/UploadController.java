@@ -10,7 +10,6 @@ import com.qiniu.http.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +32,6 @@ public class UploadController {
     private String prefix;
 
     @PostMapping("uploadImg")
-    @PreAuthorize("isAuthenticated()")
     public ResponseMsg uploadImg(@RequestParam("file") MultipartFile file) {
         Response response;
         if (file.isEmpty()) {
