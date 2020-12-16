@@ -38,6 +38,7 @@ public class ResponseMsg<T> {
         return new ResponseMsg(200, msg);
     }
 
+
     public static <T> ResponseMsg<T> success200(T data) {
         return new ResponseMsg<>(200, "请求成功", data);
     }

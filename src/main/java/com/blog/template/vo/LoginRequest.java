@@ -18,5 +18,5 @@ public class LoginRequest {
 
 
     @NotBlank(message = "password can not empty")
-    private String password;
+    private String pwd;
 }

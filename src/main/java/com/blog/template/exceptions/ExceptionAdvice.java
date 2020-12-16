@@ -15,7 +15,7 @@ public class ExceptionAdvice {
 
 
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseMsg handle(ConstraintViolationException e) {
         StringBuffer sb = new StringBuffer();
@@ -27,7 +27,7 @@ public class ExceptionAdvice {
 
 
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseMsg handle(MethodArgumentNotValidException e) {
         StringBuffer sb = new StringBuffer();
@@ -37,14 +37,14 @@ public class ExceptionAdvice {
         return ResponseMsg.fail400(sb.toString());
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(CustomerException.class)
     public ResponseMsg handel400(CustomerException e){
         return ResponseMsg.customer(e.getCode(),e.getMsg(),e.getData());
     }
 
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception.class)
     public ResponseMsg handel500(Exception e){
         e.printStackTrace();

@@ -36,7 +36,7 @@ public class UserFrontController {
         if (!userInfo.isPresent()){
             throw new CustomerException("username find fail !");
         }
-        if (!userInfo.get().getPassword().equals(loginRequest.getPassword())){
+        if (!userInfo.get().getPassword().equals(loginRequest.getPwd())){
             throw new CustomerException("password find fail !");
         }
         return ResponseMsg.success200("login success");
