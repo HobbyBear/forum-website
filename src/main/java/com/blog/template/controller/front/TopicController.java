@@ -7,10 +7,9 @@ import com.blog.template.vo.CreateTopicReq;
 import com.blog.template.vo.ResponseMsg;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topic")
@@ -34,5 +33,25 @@ public class TopicController {
 
         return ResponseMsg.success200("create topic success");
     }
+
+    @ApiOperation("update topic")
+    @PutMapping
+    public ResponseMsg updateTopic(@RequestBody CreateTopicReq createTopicReq){
+        Optional<Topic> topicOptional = topicDao.findById(createTopicReq.getTopicId());
+        if (!topicOptional.isPresent()){
+            throw new CustomerException("the topic  has not exited!");
+        }
+
+        Topic topic = Topic.builder().
+                categoryId(createTopicReq.getCategoryId()).title(createTopicReq.getTitle()).build();
+
+        topicDao.save(topic);
+
+        return ResponseMsg.success200("update topic success");
+    }
+
+
+
+
 
 }
