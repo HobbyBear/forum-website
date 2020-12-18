@@ -1,18 +1,20 @@
 package com.blog.template.common.utils;
 
+import com.blog.template.models.userinfo.UserInfo;
+
 public class UserUtil {
 
-    private static ThreadLocal<Long> threadLocal = new ThreadLocal<>();
+    private static ThreadLocal<UserInfo> threadLocal = new ThreadLocal<>();
 
-    public static Long getUserId() {
+    public static UserInfo getUser() {
         return threadLocal.get();
     }
 
-    public static void setUserId(Long id) {
-        threadLocal.set(id);
+    public static void setUser(UserInfo userInfo) {
+        threadLocal.set(userInfo);
     }
 
-    public static void removeUserId() {
+    public static void removeUser() {
         threadLocal.remove();
     }
 }

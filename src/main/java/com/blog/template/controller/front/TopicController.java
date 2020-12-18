@@ -1,5 +1,7 @@
 package com.blog.template.controller.front;
 
+import com.blog.template.common.annotation.UserLoginToken;
+import com.blog.template.common.utils.UserUtil;
 import com.blog.template.dao.TopicDao;
 import com.blog.template.exceptions.CustomerException;
 import com.blog.template.models.topic.Topic;
@@ -22,12 +24,15 @@ public class TopicController {
 
     @ApiOperation("create topic")
     @PostMapping
-    public ResponseMsg createTopic(@RequestBody CreateTopicReq createTopicReq){
-        if (topicDao.findByTitle(createTopicReq.getTitle()).isPresent()){
+    @UserLoginToken
+    public ResponseMsg createTopic(@RequestBody CreateTopicReq createTopicReq) {
+        if (topicDao.findByTitle(createTopicReq.getTitle()).isPresent()) {
             throw new CustomerException("the topic title has exited!");
         }
 
-        Topic topic = Topic.builder().categoryId(createTopicReq.getCategoryId()).title(createTopicReq.getTitle()).build();
+        Topic topic = Topic.builder()
+                .userId(UserUtil.getUser().getId())
+                .categoryId(createTopicReq.getCategoryId()).title(createTopicReq.getTitle()).build();
 
         topicDao.save(topic);
 
@@ -36,20 +41,21 @@ public class TopicController {
 
     @ApiOperation("update topic")
     @PutMapping
-    public ResponseMsg updateTopic(@RequestBody CreateTopicReq createTopicReq){
+    @UserLoginToken
+    public ResponseMsg updateTopic(@RequestBody CreateTopicReq createTopicReq) {
         Optional<Topic> topicOptional = topicDao.findById(createTopicReq.getTopicId());
-        if (!topicOptional.isPresent()){
+        if (!topicOptional.isPresent()) {
             throw new CustomerException("the topic  has not exited!");
         }
 
-        Topic topic = Topic.builder().
-                categoryId(createTopicReq.getCategoryId()).title(createTopicReq.getTitle()).build();
+        Topic topic = Topic.builder()
+                .userId(UserUtil.getUser().getId())
+                .categoryId(createTopicReq.getCategoryId()).title(createTopicReq.getTitle()).build();
 
         topicDao.save(topic);
 
         return ResponseMsg.success200("update topic success");
     }
-
 
 
 

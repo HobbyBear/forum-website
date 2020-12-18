@@ -1,9 +1,8 @@
 package com.blog.template.controller.front;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.blog.template.common.annotation.PassToken;
 import com.blog.template.common.annotation.UserLoginToken;
+import com.blog.template.common.constants.Constant;
 import com.blog.template.common.utils.UserUtil;
 import com.blog.template.dao.UserDao;
 import com.blog.template.exceptions.CustomerException;
@@ -18,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 
@@ -34,6 +33,7 @@ public class UserFrontController {
     @Autowired
     private UserDao userDao;
 
+    @PassToken
     @PostMapping("/regByPwd")
     public ResponseMsg regByPwd(@RequestBody RegPwdRequest regPwdRequest) throws MessagingException {
         userService.regByPwd(regPwdRequest);
@@ -42,45 +42,32 @@ public class UserFrontController {
 
     @PostMapping("/login")
     @PassToken
-    public ResponseMsg login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) throws MessagingException {
+    public ResponseMsg login(@RequestBody LoginRequest loginRequest,
+                             HttpServletResponse response, HttpSession session) throws MessagingException {
         Optional<UserInfo> userInfo = userDao.findByUsername(loginRequest.getUsername());
-        if (!userInfo.isPresent()){
+        if (!userInfo.isPresent()) {
             throw new CustomerException("username find fail !");
         }
-        if (!userInfo.get().getPassword().equals(loginRequest.getPwd())){
+        if (!userInfo.get().getPassword().equals(loginRequest.getPwd())) {
             throw new CustomerException("password find fail !");
         }
-        String token = getToken(userInfo.get());
-        log.info(token);
-        Cookie cookie=new Cookie("Authorization",token);
-        cookie.setMaxAge(60* 60* 24);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+
+        session.setAttribute(Constant.SessionKey.SESSION_USERID,userInfo.get().getId());
+        session.setMaxInactiveInterval(10);
         return ResponseMsg.success200("login success");
     }
 
-    public String getToken(UserInfo user) {
-        String token="";
-        token= JWT.create().withAudience(user.getId().toString())
-                .sign(Algorithm.HMAC256(user.getPassword()));
-        return token;
-    }
 
     @GetMapping
     @UserLoginToken
-    public ResponseMsg userInfo(){
-        Long userId = UserUtil.getUserId();
-        Optional<UserInfo> userInfo =  userDao.findById(userId);
-        if (!userInfo.isPresent()){
-            throw new CustomerException("user is not legal! please login in again");
-        }
-        UserInfoVo userInfoVo = UserInfoVo.builder().avatar(userInfo.get().getAvatar())
-                .id(userInfo.get().getId())
-                .username(userInfo.get().getUsername())
+    public ResponseMsg userInfo() {
+        UserInfo userInfo = UserUtil.getUser();
+        UserInfoVo userInfoVo = UserInfoVo.builder().avatar(userInfo.getAvatar())
+                .id(userInfo.getId())
+                .username(userInfo.getUsername())
                 .build();
         return ResponseMsg.success200(userInfoVo);
     }
-
 
 
 }
