@@ -59,3 +59,5 @@ CREATE TABLE `user_role`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+

@@ -1,4 +1,4 @@
-package com.blog.template.models.topiclikeuser;
+package com.blog.template.models.likerecord;
 
 
 import lombok.AllArgsConstructor;
@@ -13,8 +13,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "topic_like_user")
-public class TopicLikeUser {
+@Table(name = "like_record")
+public class  LikeRecord {
 
     @Id
     @Column(name = "id")
@@ -24,6 +24,12 @@ public class TopicLikeUser {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "like_status")
-    private int likeStatus;
+    @Column(name = "is_like")
+    private Boolean isLike;
+
+    @Column(name = "record_type")
+    private int recordType;
+
+    @Column(name = "record_id")
+    private Long recordId;
 }

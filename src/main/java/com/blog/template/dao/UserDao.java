@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,5 +30,6 @@ public interface UserDao extends JpaRepository<UserInfo,Long>,JpaSpecificationEx
     public void deleteUnInvokeUserInHalf5Minutes();
 
 
+    List<UserInfo> findByIdIn(List<Long> userIds);
 
 }

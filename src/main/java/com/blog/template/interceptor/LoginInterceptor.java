@@ -39,8 +39,13 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object
             object) throws Exception {
         Long userId = getUserId(httpServletRequest);
+        Optional<UserInfo> user = Optional.empty();
         if (!(object instanceof HandlerMethod)) {
             return true;
+        }
+        if (userId != null) {
+            user = userDao.findById(userId);
+            user.ifPresent(UserUtil::setUser);
         }
         HandlerMethod handlerMethod = (HandlerMethod) object;
         Method method = handlerMethod.getMethod();
@@ -56,11 +61,10 @@ public class LoginInterceptor implements HandlerInterceptor {
                 if (userId == null) {
                     throw new CustomerException("please login first");
                 }
-                Optional<UserInfo> user = userDao.findById(userId);
+
                 if (!user.isPresent()) {
                     throw new CustomerException("user not find ,please register");
                 }
-                UserUtil.setUser(user.get());
                 return true;
             }
         }

@@ -49,4 +49,9 @@ public class Constant {
 
         String GITHUB = "github";
     }
+
+    public interface LikeRecordType {
+        int COMMENT_LIKE_RECORD_TYPE = 1;
+        int ANSWER_LIKE_RECORD_TYPE = 2;
+    }
 }

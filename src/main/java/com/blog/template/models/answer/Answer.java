@@ -1,5 +1,4 @@
-package com.blog.template.models.topic;
-
+package com.blog.template.models.answer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,30 +13,29 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "topic")
-public class Topic {
+@Table(name = "answer")
+public class Answer {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "content")
+    private String content;
 
-
-    @Column(name = "create_time")
-    private LocalDateTime createTime;
-
-    @Column(name = "is_delete")
-    private boolean isDelete;
-
-    @Column(name = "answer_num")
-    private int answerNum;
-
+    @Column(name = "topic_id")
+    private Long topicId;
 
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "category_id")
-    private Long categoryId;
+    @Column(name = "create_time")
+    private LocalDateTime createTime;
+
+    @Column(name = "like_num")
+    private int LikeNum;
+
+    @Column(name = "content_text")
+    private String contentText;
+
 }

@@ -1,4 +1,4 @@
-package com.blog.template.vo;
+package com.blog.template.vo.topic;
 
 
 import lombok.AllArgsConstructor;

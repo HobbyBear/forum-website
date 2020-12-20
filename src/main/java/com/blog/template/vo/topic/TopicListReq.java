@@ -1,0 +1,18 @@
+package com.blog.template.vo.topic;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class TopicListReq {
+
+    private int categoryId;
+
+    private String topicName;
+
+    private int pageNum;
+
+}
