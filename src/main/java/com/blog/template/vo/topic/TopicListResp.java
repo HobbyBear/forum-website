@@ -19,6 +19,8 @@ public class TopicListResp {
 
     private int size;
 
+    private int totalPage;
+
     private List<TopicListElemVo> topicListElemList;
 
 

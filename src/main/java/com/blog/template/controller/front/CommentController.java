@@ -113,7 +113,7 @@ public class CommentController {
                             .build())
                     .answerId(comment.getAnswerId())
                     .Level(comment.getLevel())
-                    .isLike(likeRecordMap.get(comment.getId()))
+                    .isLike(likeRecordMap.size() > 0? likeRecordMap.get(comment.getId()):false)
                     .build();
             resp.add(commentElemVo);
         }
@@ -136,10 +136,13 @@ public class CommentController {
                 .createTime(LocalDateTime.now())
                 .build();
 
-        if (createCommentReq.getCommentId() == null || createCommentReq.getCommentId() == 0) {
+        if (createCommentReq.getCommentId() != null && createCommentReq.getCommentId() != 0) {
             comment.setLevel(1);
             comment.setParentCommentId(createCommentReq.getCommentId());
+        }else {
+            comment.setLevel(0);
         }
+
 
         commentDao.save(comment);
         return ResponseMsg.success200("create comment success");
@@ -170,7 +173,7 @@ public class CommentController {
                 .builder()
                 .isLike(true)
                 .recordId(commentId)
-                .recordType(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE)
+                .recordType(Constant.LikeRecordType.COMMENT_LIKE_RECORD_TYPE)
                 .userId(currentUser.getId())
                 .build();
         likeRecordDao.save(likeRecord);

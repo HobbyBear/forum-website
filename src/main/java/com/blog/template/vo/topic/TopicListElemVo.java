@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,8 +21,6 @@ public class TopicListElemVo {
     private String avatar;
 
     private Long createTime;
-
-    private List<CommentElem> commentElemList;
 
     private int answerNum;
 

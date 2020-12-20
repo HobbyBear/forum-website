@@ -53,7 +53,6 @@ public class UserFrontController {
         }
 
         session.setAttribute(Constant.SessionKey.SESSION_USERID,userInfo.get().getId());
-        session.setMaxInactiveInterval(10);
         return ResponseMsg.success200("login success");
     }
 
@@ -62,7 +61,9 @@ public class UserFrontController {
     @UserLoginToken
     public ResponseMsg userInfo() {
         UserInfo userInfo = UserUtil.getUser();
-        UserInfoVo userInfoVo = UserInfoVo.builder().avatar(userInfo.getAvatar())
+        UserInfoVo userInfoVo = UserInfoVo
+                .builder()
+                .avatar(userInfo.getAvatar())
                 .id(userInfo.getId())
                 .username(userInfo.getUsername())
                 .build();

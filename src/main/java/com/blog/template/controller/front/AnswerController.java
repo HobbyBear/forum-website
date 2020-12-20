@@ -96,7 +96,7 @@ public class AnswerController {
                     .createTime(answer.getCreateTime().toEpochSecond(ZoneOffset.UTC))
                     .username(answerUser.getUsername())
                     .likeNum(answer.getLikeNum())
-                    .isLike(likeRecordMap.get(answer.getId()))
+                    .isLike(likeRecordMap.size() > 0? likeRecordMap.get(answer.getId()):false)
                     .build();
             resp.add(topicListElem);
         }
@@ -107,7 +107,7 @@ public class AnswerController {
 
 
     @ApiOperation("create answer")
-    @PostMapping
+    @PostMapping 
     @UserLoginToken
     public ResponseMsg createAnswer(@RequestBody CreateAnswerReq createAnswerReq) {
 
