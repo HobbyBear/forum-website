@@ -171,6 +171,8 @@ public class TopicController {
             TopicListElemVo topicListElem = TopicListElemVo.builder()
                     .topicId(topic.getId())
                     .avatar(topicUser.getAvatar())
+                    // todo 暂时用这个代替
+                    .avatar("http://qlsu57ex5.hn-bkt.clouddn.com/OIP.jfif")
                     .topicName(topic.getTitle())
                     .createTime(topic.getCreateTime().toEpochSecond(ZoneOffset.UTC))
                     .username(topicUser.getUsername())

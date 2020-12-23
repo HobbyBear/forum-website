@@ -40,7 +40,7 @@ public class CategoryController {
 
 
     @ApiOperation("category list")
-    @GetMapping
+    @GetMapping("category_list")
     @PassToken
     public ResponseMsg categoryList() {
         List<Category> categoryList = categoryDao.findAll();
