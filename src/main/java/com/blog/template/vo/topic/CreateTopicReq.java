@@ -21,4 +21,6 @@ public class CreateTopicReq {
     @NotEmpty(message = "please complete the category")
     private Long categoryId;
 
+    private String coverImg;
+
 }

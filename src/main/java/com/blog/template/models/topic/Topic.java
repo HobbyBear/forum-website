@@ -40,4 +40,7 @@ public class Topic {
 
     @Column(name = "category_id")
     private Long categoryId;
+
+    @Column(name = "cover_img")
+    private String coverImg;
 }

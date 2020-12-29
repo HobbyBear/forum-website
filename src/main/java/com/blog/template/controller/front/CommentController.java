@@ -5,9 +5,12 @@ import com.blog.template.common.annotation.PassToken;
 import com.blog.template.common.annotation.UserLoginToken;
 import com.blog.template.common.constants.Constant;
 import com.blog.template.common.utils.UserUtil;
+import com.blog.template.dao.AnswerDao;
 import com.blog.template.dao.CommentDao;
 import com.blog.template.dao.LikeRecordDao;
 import com.blog.template.dao.UserDao;
+import com.blog.template.exceptions.CustomerException;
+import com.blog.template.models.answer.Answer;
 import com.blog.template.models.comment.Comment;
 import com.blog.template.models.likerecord.LikeRecord;
 import com.blog.template.models.userinfo.UserInfo;
@@ -37,12 +40,14 @@ public class CommentController {
     @Autowired
     private LikeRecordDao likeRecordDao;
 
+    @Autowired
+    private AnswerDao answerDao;
+
     @ApiOperation("comment list")
     @GetMapping("list")
     @PassToken
     public ResponseMsg commentList(@RequestParam(required = false) Long answerId, @RequestParam(required = false) Long commentId, @RequestParam int level) {
 
-        // todo toUserId 后台需要加上
         UserInfo currentUser = UserUtil.getUser();
 
         List<CommentElemVo> resp = new ArrayList<>();
@@ -77,15 +82,15 @@ public class CommentController {
             commentIdList.add(comment.getId());
         });
 
-        HashMap<Long,Boolean> likeRecordMap = new HashMap<>();
-        if (currentUser != null){
+        HashMap<Long, Boolean> likeRecordMap = new HashMap<>();
+        if (currentUser != null) {
             List<LikeRecord> likeRecordList = likeRecordDao.
-                    findByRecordTypeAndUserIdAndRecordIdIn(Constant.LikeRecordType.COMMENT_LIKE_RECORD_TYPE,currentUser.getId(),
+                    findByRecordTypeAndUserIdAndRecordIdIn(Constant.LikeRecordType.COMMENT_LIKE_RECORD_TYPE, currentUser.getId(),
                             commentIdList);
             likeRecordList.forEach(likeRecord -> {
-                if (likeRecord.getIsLike()){
+                if (likeRecord.getIsLike()) {
                     likeRecordMap.put(likeRecord.getRecordId(), Boolean.TRUE);
-                }else {
+                } else {
                     likeRecordMap.put(likeRecord.getRecordId(), Boolean.FALSE);
                 }
             });
@@ -114,7 +119,7 @@ public class CommentController {
                             .build())
                     .answerId(comment.getAnswerId())
                     .Level(comment.getLevel())
-                    .isLike(likeRecordMap.size() > 0? likeRecordMap.get(comment.getId()):false)
+                    .isLike(likeRecordMap.size() > 0 ? likeRecordMap.get(comment.getId()) : false)
                     .build();
             resp.add(commentElemVo);
         }
@@ -128,24 +133,53 @@ public class CommentController {
     @PostMapping("create_comment")
     @UserLoginToken
     public ResponseMsg createComment(@RequestBody CreateCommentReq createCommentReq) {
+
+        if (createCommentReq.getCommentId() == 0 && createCommentReq.getAnswerId() == 0) {
+             throw new CustomerException("comment id and answer id can not both zero");
+        }
+
+        if (createCommentReq.getContent().equals("")){
+             throw new CustomerException("comment content msut not be empty");
+        }
+
+        Long toUserId = 0L;
+
+        if (createCommentReq.getCommentId() != 0) {
+            Optional<Comment> commentOptional = commentDao.findById(createCommentReq.getCommentId());
+            if (!commentOptional.isPresent()) {
+                return ResponseMsg.success200("comment id is not exit ,please check your args");
+            }
+            toUserId = commentOptional.get().getFromUserId();
+        }
+
+        if (createCommentReq.getCommentId() == 0) {
+            Optional<Answer> answerOptional = answerDao.findById(createCommentReq.getAnswerId());
+            if (!answerOptional.isPresent()) {
+                return ResponseMsg.success200("comment id is not exit ,please check your args");
+            }
+            toUserId = answerOptional.get().getUserId();
+        }
+
+
         Comment comment = Comment.builder()
                 .fromUserId(UserUtil.getUser().getId())
-                .toUserId(createCommentReq.getToUserId())
+                .toUserId(toUserId)
                 .content(createCommentReq.getContent())
                 .topicId(createCommentReq.getTopicId())
                 .answerId(createCommentReq.getAnswerId())
                 .createTime(LocalDateTime.now())
+                .parentCommentId(createCommentReq.getCommentId())
                 .build();
 
         if (createCommentReq.getCommentId() != null && createCommentReq.getCommentId() != 0) {
             comment.setLevel(1);
             comment.setParentCommentId(createCommentReq.getCommentId());
-        }else {
+        } else {
             comment.setLevel(0);
         }
 
-
         commentDao.save(comment);
+        answerDao.incrCommentNum(createCommentReq.getAnswerId());
         return ResponseMsg.success200("create comment success");
     }
 
@@ -154,18 +188,18 @@ public class CommentController {
     @GetMapping("praise_comment")
     @UserLoginToken
     @Transactional
-    public ResponseMsg praiseAnswer(@RequestParam Long commentId){
+    public ResponseMsg praiseAnswer(@RequestParam Long commentId) {
         UserInfo currentUser = UserUtil.getUser();
         Optional<LikeRecord> likeRecordOptional =
                 likeRecordDao.findByRecordTypeAndUserIdAndRecordId(Constant.LikeRecordType.COMMENT_LIKE_RECORD_TYPE,
-                        currentUser.getId(),commentId);
-        if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()){
+                        currentUser.getId(), commentId);
+        if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(false);
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(false);
         }
 
-        if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()){
+        if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(true);
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(true);

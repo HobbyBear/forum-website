@@ -17,4 +17,12 @@ public class UserUtil {
     public static void removeUser() {
         threadLocal.remove();
     }
+
+    private static String[] avators = {"http://qlsu57ex5.hn-bkt.clouddn.com/boy.png", "http://qlsu57ex5.hn-bkt.clouddn.com/guai.png",
+            "http://qlsu57ex5.hn-bkt.clouddn.com/guai2.jfif", "http://qlsu57ex5.hn-bkt.clouddn.com/panghu.png"};
+
+    // 随机头像返回
+    public static String randomAvatorUrl() {
+        return avators[(int)(1 +Math.random() * 4)];
+    }
 }

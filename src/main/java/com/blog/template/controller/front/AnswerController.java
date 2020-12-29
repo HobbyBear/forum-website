@@ -7,9 +7,12 @@ import com.blog.template.common.constants.Constant;
 import com.blog.template.common.utils.UserUtil;
 import com.blog.template.dao.AnswerDao;
 import com.blog.template.dao.LikeRecordDao;
+import com.blog.template.dao.TopicDao;
 import com.blog.template.dao.UserDao;
+import com.blog.template.exceptions.CustomerException;
 import com.blog.template.models.answer.Answer;
 import com.blog.template.models.likerecord.LikeRecord;
+import com.blog.template.models.topic.Topic;
 import com.blog.template.models.userinfo.UserInfo;
 import com.blog.template.vo.ResponseMsg;
 import com.blog.template.vo.answer.AnswerElemVo;
@@ -35,6 +38,9 @@ public class AnswerController {
 
     @Autowired
     private AnswerDao answerDao;
+
+    @Autowired
+    private TopicDao topicDao;
 
     @Autowired
     private LikeRecordDao likeRecordDao;
@@ -95,6 +101,7 @@ public class AnswerController {
                     .contentText(answer.getContentText())
                     .createTime(answer.getCreateTime().toEpochSecond(ZoneOffset.UTC))
                     .username(answerUser.getUsername())
+                    .commentNum(answer.getCommentNum())
                     .likeNum(answer.getLikeNum())
                     .isLike(likeRecordMap.size() > 0 && likeRecordMap.get(answer.getId()) != null && likeRecordMap.get(answer.getId()))
                     .build();
@@ -111,8 +118,14 @@ public class AnswerController {
     @UserLoginToken
     public ResponseMsg createAnswer(@RequestBody CreateAnswerReq createAnswerReq) {
 
+        Optional<Topic> optionalTopic = topicDao.findById(createAnswerReq.getTopicId());
+
+        if (!optionalTopic.isPresent()){
+            throw new CustomerException("the topic id is in valid");
+        }
+
         UserInfo currentUser = UserUtil.getUser();
-        Answer topic = Answer.builder()
+        Answer answer = Answer.builder()
                 .userId(UserUtil.getUser().getId())
                 .content(createAnswerReq.getContent())
                 .contentText(createAnswerReq.getContentText())
@@ -120,7 +133,10 @@ public class AnswerController {
                 .userId(currentUser.getId())
                 .topicId(createAnswerReq.getTopicId()).build();
 
-        answerDao.save(topic);
+        answerDao.save(answer);
+
+        topicDao.incrAnswerNum(createAnswerReq.getTopicId());
+
 
         return ResponseMsg.success200("create answer success");
     }

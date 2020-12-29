@@ -1,10 +1,9 @@
 package com.blog.template.controller.admin;
 
-import com.blog.template.common.constants.Constant;
 import com.blog.template.models.userinfo.UserInfo;
+import com.blog.template.models.userinfo.UserSearchVo;
 import com.blog.template.service.user.UserService;
 import com.blog.template.vo.ResponseMsg;
-import com.blog.template.models.userinfo.UserSearchVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,6 @@ public class UserController {
     public ResponseMsg updateOrSaveUser(@RequestBody UserInfo userInfo) {
         if (userInfo.getId() == null) {
             userInfo.setCreateTime(LocalDateTime.now());
-            userInfo.setStatus(Constant.USER.INVOKE);
         }
         userService.saveOrUpdateUser(userInfo);
         return ResponseMsg.success200("请求成功");

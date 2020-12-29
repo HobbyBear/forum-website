@@ -38,4 +38,7 @@ public class Answer {
     @Column(name = "content_text")
     private String contentText;
 
+    @Column(name = "comment_num")
+    private int commentNum;
+
 }

@@ -15,4 +15,5 @@ public class RegPwdRequest {
     private String username;
 
     private String pwd;
+
 }

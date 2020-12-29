@@ -34,12 +34,6 @@ public class UserInfo implements Serializable {
 
 
     /**
-     * 1,激活  0 -未激活
-     */
-    @Column(name = "status")
-    private Integer status;
-
-    /**
      * 头像地址
      */
     @Column(name = "avatar")

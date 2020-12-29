@@ -2,13 +2,10 @@ package com.blog.template.service.user;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import com.blog.template.common.constants.Constant;
 import com.blog.template.common.utils.PageBeanConvertUtil;
-import com.blog.template.dao.RoleDao;
+import com.blog.template.common.utils.UserUtil;
 import com.blog.template.dao.UserDao;
-import com.blog.template.dao.UserRoleDao;
 import com.blog.template.exceptions.CustomerException;
-import com.blog.template.models.role.Role;
 import com.blog.template.models.userinfo.UserInfo;
 import com.blog.template.models.userinfo.UserInfoVo;
 import com.blog.template.models.userinfo.UserSearchVo;
@@ -28,7 +25,6 @@ import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -38,12 +34,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
 
-    @Autowired
-    private UserRoleDao userRoleDao;
 
 
-    @Autowired
-    private RoleDao roleDao;
 
 
     @Override
@@ -56,9 +48,8 @@ public class UserServiceImpl implements UserService {
                 .builder()
                 .password(regPwdRequest.getPwd())
                 .username(regPwdRequest.getUsername())
-                .status(Constant.USER.NOT_INVOKE)
                 .createTime(LocalDateTime.now())
-                .avatar("")
+                .avatar(UserUtil.randomAvatorUrl())
                 .build();
         userDao.save(userInfo);
     }
@@ -80,7 +71,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delUserById(Long id) {
         userDao.deleteById(id);
-        userRoleDao.deleteAllByUserId(id);
     }
 
     @Override
@@ -115,7 +105,6 @@ public class UserServiceImpl implements UserService {
             } else {
                 userInfoVo.setSupportChangeRole(true);
             }
-            userInfoVo.setRoles(roleDao.findRoleListByUserId(u.getId()).stream().map(Role::getRoleName).collect(Collectors.toList()));
             userInfoVos.add(userInfoVo);
         });
         pageBean.setContent(userInfoVos);

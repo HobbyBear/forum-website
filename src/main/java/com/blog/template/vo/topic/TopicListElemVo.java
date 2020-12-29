@@ -24,4 +24,6 @@ public class TopicListElemVo {
 
     private int answerNum;
 
+    private String coverImg;
+
 }

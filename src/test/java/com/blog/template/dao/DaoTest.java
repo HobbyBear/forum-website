@@ -36,7 +36,6 @@ public class DaoTest extends BaseTest {
     @Test
     public void initData() {
         userDao.save(UserInfo.builder()
-                .status(1)
                 .password("xch")
                 .username("xch")
                 .createTime(LocalDateTime.now())
