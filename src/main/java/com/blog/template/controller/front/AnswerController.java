@@ -40,7 +40,7 @@ public class AnswerController {
     private LikeRecordDao likeRecordDao;
 
     @ApiOperation("answer list")
-    @PostMapping("list")
+    @GetMapping("list")
     @PassToken
     public ResponseMsg answerList(@RequestParam Long topicId) {
 
@@ -88,17 +88,17 @@ public class AnswerController {
         for (Answer answer :
                 answerList) {
             UserInfo answerUser = userMap.get(answer.getUserId());
-            AnswerElemVo topicListElem = AnswerElemVo.builder()
-                    .topicId(answer.getId())
+            AnswerElemVo answerElemVo = AnswerElemVo.builder()
+                    .answerId(answer.getId())
                     .avatar(answerUser.getAvatar())
                     .content(answer.getContent())
                     .contentText(answer.getContentText())
                     .createTime(answer.getCreateTime().toEpochSecond(ZoneOffset.UTC))
                     .username(answerUser.getUsername())
                     .likeNum(answer.getLikeNum())
-                    .isLike(likeRecordMap.size() > 0? likeRecordMap.get(answer.getId()):false)
+                    .isLike(likeRecordMap.size() > 0 && likeRecordMap.get(answer.getId()) != null && likeRecordMap.get(answer.getId()))
                     .build();
-            resp.add(topicListElem);
+            resp.add(answerElemVo);
         }
 
         return ResponseMsg.success200(resp);

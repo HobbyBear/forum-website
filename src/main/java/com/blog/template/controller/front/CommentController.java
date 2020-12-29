@@ -38,10 +38,11 @@ public class CommentController {
     private LikeRecordDao likeRecordDao;
 
     @ApiOperation("comment list")
-    @PostMapping("list")
+    @GetMapping("list")
     @PassToken
-    public ResponseMsg commentList(@RequestParam Long answerId, @RequestParam Long commentId, @RequestParam int level) {
+    public ResponseMsg commentList(@RequestParam(required = false) Long answerId, @RequestParam(required = false) Long commentId, @RequestParam int level) {
 
+        // todo toUserId 后台需要加上
         UserInfo currentUser = UserUtil.getUser();
 
         List<CommentElemVo> resp = new ArrayList<>();

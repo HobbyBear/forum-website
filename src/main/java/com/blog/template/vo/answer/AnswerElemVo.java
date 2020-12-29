@@ -14,7 +14,7 @@ public class AnswerElemVo {
 
     private String contentText;
 
-    private Long topicId;
+    private Long answerId;
 
     private Long userId;
 
