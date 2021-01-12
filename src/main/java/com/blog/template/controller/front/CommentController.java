@@ -46,7 +46,7 @@ public class CommentController {
     @ApiOperation("comment list")
     @GetMapping("list")
     @PassToken
-    public ResponseMsg commentList(@RequestParam(required = false) Long answerId, @RequestParam(required = false) Long commentId, @RequestParam int level) {
+    public ResponseMsg commentList(@RequestParam(required = false) Long answerId) {
 
         UserInfo currentUser = UserUtil.getUser();
 
@@ -54,13 +54,8 @@ public class CommentController {
 
         List<Comment> commentList = new ArrayList<>();
 
-        if (level == 0) {
-            commentList = commentDao.findByAnswerIdAndLevel(answerId, 0);
-        }
+        commentList = commentDao.findByAnswerId(answerId);
 
-        if (level == 1) {
-            commentList = commentDao.findByParentCommentIdAndLevel(commentId, 1);
-        }
 
         if (commentList.size() == 0) {
             return ResponseMsg.success200(resp);
@@ -100,7 +95,7 @@ public class CommentController {
         for (Comment comment :
                 commentList) {
             UserInfo fromUser = userMap.get(comment.getFromUserId());
-            UserInfo toUser = userMap.get(comment.getFromUserId());
+            UserInfo toUser = userMap.get(comment.getToUserId());
             CommentElemVo commentElemVo = CommentElemVo.builder()
                     .commentId(comment.getId())
                     .fromUer(UserElemVo.builder()
@@ -135,14 +130,15 @@ public class CommentController {
     public ResponseMsg createComment(@RequestBody CreateCommentReq createCommentReq) {
 
         if (createCommentReq.getCommentId() == 0 && createCommentReq.getAnswerId() == 0) {
-             throw new CustomerException("comment id and answer id can not both zero");
+            throw new CustomerException("comment id and answer id can not both zero");
         }
 
-        if (createCommentReq.getContent().equals("")){
-             throw new CustomerException("comment content msut not be empty");
+        if (createCommentReq.getContent().equals("")) {
+            throw new CustomerException("comment content msut not be empty");
         }
 
         Long toUserId = 0L;
+        int level = 0;
 
         if (createCommentReq.getCommentId() != 0) {
             Optional<Comment> commentOptional = commentDao.findById(createCommentReq.getCommentId());
@@ -150,6 +146,7 @@ public class CommentController {
                 return ResponseMsg.success200("comment id is not exit ,please check your args");
             }
             toUserId = commentOptional.get().getFromUserId();
+            level = 1;
         }
 
         if (createCommentReq.getCommentId() == 0) {
@@ -160,6 +157,10 @@ public class CommentController {
             toUserId = answerOptional.get().getUserId();
         }
 
+        if (UserUtil.getUser().getId().equals(toUserId)){
+            return ResponseMsg.success200("you do not permit comment your self!");
+        }
+
 
         Comment comment = Comment.builder()
                 .fromUserId(UserUtil.getUser().getId())
@@ -167,6 +168,7 @@ public class CommentController {
                 .content(createCommentReq.getContent())
                 .topicId(createCommentReq.getTopicId())
                 .answerId(createCommentReq.getAnswerId())
+                .level(level)
                 .createTime(LocalDateTime.now())
                 .parentCommentId(createCommentReq.getCommentId())
                 .build();
