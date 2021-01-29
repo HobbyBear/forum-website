@@ -18,8 +18,8 @@ public class UserUtil {
         threadLocal.remove();
     }
 
-    private static String[] avators = {"http://qlsu57ex5.hn-bkt.clouddn.com/boy.png", "http://qlsu57ex5.hn-bkt.clouddn.com/guai.png",
-            "http://qlsu57ex5.hn-bkt.clouddn.com/guai2.jfif", "http://qlsu57ex5.hn-bkt.clouddn.com/panghu.png"};
+    private static String[] avators = {"http://139.198.186.81:8080/getImg/4b92d42fd26950e13662cc2dc4d6dd46", "http://139.198.186.81:8080/getImg/e801cd8e7bdc9fc10f9ba049c73576e9",
+            "http://139.198.186.81:8080/getImg/cf7f3912546455d0440bd88a2b09429e", "http://139.198.186.81:8080/getImg/3a912bfbc2276c2982712d3784e139b3"};
 
     // 随机头像返回
     public static String randomAvatorUrl() {
