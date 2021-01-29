@@ -66,6 +66,7 @@ public class UserFrontController {
                 .avatar(userInfo.getAvatar())
                 .id(userInfo.getId())
                 .username(userInfo.getUsername())
+                .praiseNum(userInfo.getPraiseNum())
                 .build();
         return ResponseMsg.success200(userInfoVo);
     }

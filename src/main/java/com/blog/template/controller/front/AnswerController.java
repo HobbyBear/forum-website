@@ -77,15 +77,15 @@ public class AnswerController {
             answerIdList.add(answer.getId());
         });
 
-        HashMap<Long,Boolean> likeRecordMap = new HashMap<>();
-        if (currentUser != null){
+        HashMap<Long, Boolean> likeRecordMap = new HashMap<>();
+        if (currentUser != null) {
             List<LikeRecord> likeRecordList = likeRecordDao.
-                    findByRecordTypeAndUserIdAndRecordIdIn(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE,currentUser.getId(),
+                    findByRecordTypeAndUserIdAndRecordIdIn(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE, currentUser.getId(),
                             answerIdList);
             likeRecordList.forEach(likeRecord -> {
-                if (likeRecord.getIsLike()){
+                if (likeRecord.getIsLike()) {
                     likeRecordMap.put(likeRecord.getRecordId(), Boolean.TRUE);
-                }else {
+                } else {
                     likeRecordMap.put(likeRecord.getRecordId(), Boolean.FALSE);
                 }
             });
@@ -114,13 +114,13 @@ public class AnswerController {
 
 
     @ApiOperation("create answer")
-    @PostMapping 
+    @PostMapping
     @UserLoginToken
     public ResponseMsg createAnswer(@RequestBody CreateAnswerReq createAnswerReq) {
 
         Optional<Topic> optionalTopic = topicDao.findById(createAnswerReq.getTopicId());
 
-        if (!optionalTopic.isPresent()){
+        if (!optionalTopic.isPresent()) {
             throw new CustomerException("the topic id is in valid");
         }
 
@@ -146,18 +146,18 @@ public class AnswerController {
     @GetMapping("praise_answer")
     @UserLoginToken
     @Transactional
-    public ResponseMsg praiseAnswer(@RequestParam Long answerId){
+    public ResponseMsg praiseAnswer(@RequestParam Long answerId) {
         UserInfo currentUser = UserUtil.getUser();
         Optional<LikeRecord> likeRecordOptional =
-                likeRecordDao.findByRecordTypeAndUserIdAndRecordId(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE,currentUser.getId(),answerId);
-        if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()){
+                likeRecordDao.findByRecordTypeAndUserIdAndRecordId(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE, currentUser.getId(), answerId);
+        if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(false);
             answerDao.notLikeAnswer(answerId);
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(false);
         }
 
-        if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()){
+        if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(true);
             answerDao.likeAnswer(answerId);
             likeRecordDao.save(likeRecordOptional.get());
@@ -170,6 +170,7 @@ public class AnswerController {
                 .recordType(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE)
                 .userId(currentUser.getId())
                 .build();
+        userDao.incrPriaseNum(currentUser.getId());
         answerDao.likeAnswer(answerId);
         likeRecordDao.save(likeRecord);
         return ResponseMsg.success200(true);
