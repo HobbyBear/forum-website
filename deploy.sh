@@ -8,7 +8,7 @@ docker rmi forum-website
 
 mvn clean package
 
-mv forum-website-0.0.1-SNAPSHOT.jar ./forum-website-0.0.1-SNAPSHOT.jar
+mv ./target/forum-website-0.0.1-SNAPSHOT.jar ./forum-website-0.0.1-SNAPSHOT.jar
 
 docker build -t forum-website .
 
