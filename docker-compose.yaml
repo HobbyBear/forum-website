@@ -3,6 +3,7 @@ services:
 
   vote:
     image: forum-website
+    container_name: forum-website
     ports:
       - 8081:8081
     networks:
