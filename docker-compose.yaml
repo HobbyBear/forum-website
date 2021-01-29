@@ -2,13 +2,11 @@ version: "3"
 services:
 
   vote:
-    image: dockersamples/examplevotingapp_vote:before
+    image: forum-website
     ports:
-      - 5000:80
+      - 8081:8081
     networks:
-      - frontend
-    depends_on:
-      - redis
+      - backend
     deploy:
       replicas: 2
       update_config:
@@ -17,8 +15,5 @@ services:
         condition: on-failure
 
 networks:
-  frontend:
   backend:
 
-volumes:
-  db-data:
