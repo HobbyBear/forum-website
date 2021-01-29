@@ -129,13 +129,13 @@ public class TopicController {
         TopicListResp topicListResp = TopicListResp
                 .builder().
                 currentPage(topicListReq.getPageNum())
-                .pageSize(10)
+                .pageSize(100)
                 .size(0)
                 .topicListElemList(new ArrayList<>())
                 .build();
 
 
-        Pageable pageable = PageRequest.of(topicListReq.getPageNum(), 10);
+        Pageable pageable = PageRequest.of(topicListReq.getPageNum(), 100);
         Specification<Topic> specification = (Specification<Topic>) (root, query, criteriaBuilder) -> {
             List<Predicate> list = new ArrayList<>();
             if (topicListReq.getCategoryId() != 0) {

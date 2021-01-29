@@ -51,4 +51,6 @@ public class UserInfoVo {
      */
     private boolean supportChangeRole;
 
+    private int praiseNum;
+
 }

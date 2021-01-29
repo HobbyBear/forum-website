@@ -32,4 +32,9 @@ public interface UserDao extends JpaRepository<UserInfo,Long>,JpaSpecificationEx
 
     List<UserInfo> findByIdIn(List<Long> userIds);
 
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true,value = "update forum.user_info  set praise_num = praise_num + 1  WHERE id = ? )")
+    void incrPriaseNum(Long id);
+
 }

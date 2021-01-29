@@ -41,4 +41,7 @@ public class UserInfo implements Serializable {
 
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+    @Column(name = "praise_num")
+    private int praiseNum;
 }
