@@ -43,5 +43,5 @@ public class UserInfo implements Serializable {
     private LocalDateTime createTime;
 
     @Column(name = "praise_num")
-    private int praiseNum;
+    private Integer praiseNum;
 }
