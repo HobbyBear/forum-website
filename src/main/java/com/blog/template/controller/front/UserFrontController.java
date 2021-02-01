@@ -72,4 +72,11 @@ public class UserFrontController {
     }
 
 
+    @GetMapping("logOut")
+    @UserLoginToken
+    public ResponseMsg logOut(HttpSession session){
+        session.invalidate();
+        return ResponseMsg.success200("logOut success");
+    }
+
 }

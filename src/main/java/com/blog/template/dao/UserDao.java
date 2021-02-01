@@ -34,7 +34,7 @@ public interface UserDao extends JpaRepository<UserInfo,Long>,JpaSpecificationEx
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = "update forum.user_info  set praise_num = praise_num + 1  WHERE id = ? )")
+    @Query(nativeQuery = true,value = "update forum.user_info  set praise_num = praise_num + 1  WHERE id = ? ")
     void incrPriaseNum(Long id);
 
 }
