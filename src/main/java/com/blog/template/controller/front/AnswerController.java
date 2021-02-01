@@ -150,9 +150,16 @@ public class AnswerController {
         UserInfo currentUser = UserUtil.getUser();
         Optional<LikeRecord> likeRecordOptional =
                 likeRecordDao.findByRecordTypeAndUserIdAndRecordId(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE, currentUser.getId(), answerId);
+
+        Optional<Answer> answerOptional = answerDao.findById(answerId);
+        if (!answerOptional.isPresent()){
+            return ResponseMsg.fail400("answer not find");
+        }
+
         if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(false);
             answerDao.notLikeAnswer(answerId);
+            userDao.decrPriaseNum(answerOptional.get().getUserId());
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(false);
         }
@@ -160,6 +167,7 @@ public class AnswerController {
         if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(true);
             answerDao.likeAnswer(answerId);
+            userDao.incrPriaseNum(answerOptional.get().getUserId());
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(true);
         }
@@ -170,8 +178,8 @@ public class AnswerController {
                 .recordType(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE)
                 .userId(currentUser.getId())
                 .build();
-        userDao.incrPriaseNum(currentUser.getId());
         answerDao.likeAnswer(answerId);
+        userDao.incrPriaseNum(answerOptional.get().getUserId());
         likeRecordDao.save(likeRecord);
         return ResponseMsg.success200(true);
     }

@@ -8,11 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface AnswerDao extends JpaRepository<Answer, Long>, JpaSpecificationExecutor<Answer> {
 
     List<Answer> findByTopicIdIn(List<Long> topicIdList);
+
+    Optional<Answer> findById(Long id);
 
     List<Answer> findByTopicId(Long topicId);
 
