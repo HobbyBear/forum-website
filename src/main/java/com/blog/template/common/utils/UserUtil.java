@@ -23,6 +23,6 @@ public class UserUtil {
 
     // 随机头像返回
     public static String randomAvatorUrl() {
-        return avators[(int)(1 +Math.random() * 4)];
+        return avators[(int)Math.round(Math.random() * 4)];
     }
 }

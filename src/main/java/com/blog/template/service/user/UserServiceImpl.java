@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
                 .username(regPwdRequest.getUsername())
                 .createTime(LocalDateTime.now())
                 .avatar(UserUtil.randomAvatorUrl())
+                .praiseNum(0)
                 .build();
         userDao.save(userInfo);
     }
