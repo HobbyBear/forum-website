@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author xch
@@ -90,6 +91,16 @@ public class DaoTest extends BaseTest {
                 .fromUserId(1L)
                 .toUserId(1L)
                 .build());
+
+    }
+
+    @Test
+    public void selData() {
+        List<UserInfo> userInfos = userDao.findAll();
+        System.out.println(userInfos);
+
+        List<Comment> comments = commentDao.findAll();
+        System.out.println(comments);
 
     }
 
