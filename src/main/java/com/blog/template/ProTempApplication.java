@@ -18,6 +18,7 @@ public class ProTempApplication {
     }
 
     @Bean
+    // 跨域过滤器注册
     public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();

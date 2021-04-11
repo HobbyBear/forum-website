@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void regByPwd(RegPwdRequest regPwdRequest) throws MessagingException {
+        // 查看用户是否存在
         if (userDao.findByUsername(regPwdRequest.getUsername()).isPresent()) {
             throw new CustomerException("username has exited !");
         }
@@ -52,6 +53,7 @@ public class UserServiceImpl implements UserService {
                 .avatar(UserUtil.randomAvatorUrl())
                 .praiseNum(0)
                 .build();
+        // 添加用户
         userDao.save(userInfo);
     }
 
@@ -60,8 +62,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveOrUpdateUser(UserInfo userInfo) {
         if (userInfo.getId() != null) {
+            // 查询用户信息
             UserInfo metaUser = userDao.getOne(userInfo.getId());
+            // 复制用户实体信息
             BeanUtil.copyProperties(userInfo, metaUser, CopyOptions.create().setIgnoreNullValue(true));
+            // 更新用户信息
             userDao.save(metaUser);
         } else {
             userDao.save(userInfo);
@@ -81,6 +86,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageBean<UserInfoVo> findUserVoByUserSearchVo(UserSearchVo userSearchVo, Integer page, Integer pageSize) {
+
+        // 构造搜索对象
         Specification<UserInfo> specification = (Specification<UserInfo>) (root, criteriaQuery, cb) -> {
             List<Predicate> predicateList = Lists.newArrayList();
             if (userSearchVo.getUsername() != null) {
@@ -94,9 +101,12 @@ public class UserServiceImpl implements UserService {
             }
             return cb.and(predicateList.toArray(new Predicate[predicateList.size()]));
         };
+        // jpa 分页
         Page<UserInfo> userInfoPage = userDao.findAll(specification, PageRequest.of(page - 1, pageSize));
         PageBean pageBean = PageBeanConvertUtil.convertCustomerPageBean(userInfoPage);
         List<UserInfoVo> userInfoVos = Lists.newArrayList();
+
+        // 封装分页结果
         pageBean.getContent().forEach(userInfo -> {
             UserInfo u = (UserInfo) userInfo;
             UserInfoVo userInfoVo = new UserInfoVo();

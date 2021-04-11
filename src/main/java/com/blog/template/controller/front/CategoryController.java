@@ -24,10 +24,12 @@ public class CategoryController {
     @ApiOperation("create category")
     @PostMapping
     @UserLoginToken
+    // 创建话题分类
     public ResponseMsg createTopic(@RequestBody CreateCategoryReq categoryReq) {
         if (categoryDao.findByName(categoryReq.getTitle()).isPresent()) {
             throw new CustomerException("the category title has exited!");
         }
+
 
         Category topic = Category.builder()
                 .name(categoryReq.getTitle())
@@ -42,6 +44,7 @@ public class CategoryController {
     @ApiOperation("category list")
     @GetMapping("category_list")
     @PassToken
+    // 获取分类列表
     public ResponseMsg categoryList() {
         List<Category> categoryList = categoryDao.findAll();
         return ResponseMsg.success200(categoryList);

@@ -48,23 +48,28 @@ public class AnswerController {
     @ApiOperation("answer list")
     @GetMapping("list")
     @PassToken
+    // 根据话题id获取答案列表
     public ResponseMsg answerList(@RequestParam Long topicId) {
 
+        // 获取当前用户
         UserInfo currentUser = UserUtil.getUser();
 
         List<AnswerElemVo> resp = new ArrayList<>();
 
+        // 根据topic id获取该topic下所有回答
         List<Answer> answerList = answerDao.findByTopicId(topicId);
 
         if (answerList.size() == 0) {
             return ResponseMsg.success200(resp);
         }
 
+        // 获取回答用户id
         List<Long> userIdList = new ArrayList<>();
         answerList.forEach((answer) -> {
             userIdList.add(answer.getUserId());
         });
 
+        // 根据id获取回答用户信息
         List<UserInfo> userInfoList = userDao.findByIdIn(userIdList);
         HashMap<Long, UserInfo> userMap = new HashMap<>();
         for (UserInfo u :
@@ -79,6 +84,7 @@ public class AnswerController {
 
         HashMap<Long, Boolean> likeRecordMap = new HashMap<>();
         if (currentUser != null) {
+            // 获取点赞记录
             List<LikeRecord> likeRecordList = likeRecordDao.
                     findByRecordTypeAndUserIdAndRecordIdIn(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE, currentUser.getId(),
                             answerIdList);
@@ -91,6 +97,7 @@ public class AnswerController {
             });
 
         }
+        // 封装回答列表
         for (Answer answer :
                 answerList) {
             UserInfo answerUser = userMap.get(answer.getUserId());
@@ -116,15 +123,19 @@ public class AnswerController {
     @ApiOperation("create answer")
     @PostMapping
     @UserLoginToken
+    // 创造答案
     public ResponseMsg createAnswer(@RequestBody CreateAnswerReq createAnswerReq) {
 
+        // 获取话题
         Optional<Topic> optionalTopic = topicDao.findById(createAnswerReq.getTopicId());
 
         if (!optionalTopic.isPresent()) {
             throw new CustomerException("the topic id is in valid");
         }
 
+        // 获取当前用户信息
         UserInfo currentUser = UserUtil.getUser();
+        // 封装答题信息
         Answer answer = Answer.builder()
                 .userId(UserUtil.getUser().getId())
                 .content(createAnswerReq.getContent())
@@ -135,6 +146,7 @@ public class AnswerController {
 
         answerDao.save(answer);
 
+        // 增加话题回答数量
         topicDao.incrAnswerNum(createAnswerReq.getTopicId());
 
 
@@ -146,8 +158,11 @@ public class AnswerController {
     @GetMapping("praise_answer")
     @UserLoginToken
     @Transactional
+    // 点赞答案
     public ResponseMsg praiseAnswer(@RequestParam Long answerId) {
+        // 获取当前用户
         UserInfo currentUser = UserUtil.getUser();
+        // 获取当前用户是否点赞过这个答案的记录
         Optional<LikeRecord> likeRecordOptional =
                 likeRecordDao.findByRecordTypeAndUserIdAndRecordId(Constant.LikeRecordType.ANSWER_LIKE_RECORD_TYPE, currentUser.getId(), answerId);
 
@@ -156,6 +171,7 @@ public class AnswerController {
             return ResponseMsg.fail400("answer not find");
         }
 
+        // 如果之前记录是点赞过，那么此次操作就是取消点赞
         if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(false);
             answerDao.notLikeAnswer(answerId);
@@ -164,6 +180,7 @@ public class AnswerController {
             return ResponseMsg.success200(false);
         }
 
+        // 如果之前是未点赞，那么此次操作就更新为点赞
         if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(true);
             answerDao.likeAnswer(answerId);
@@ -179,6 +196,7 @@ public class AnswerController {
                 .userId(currentUser.getId())
                 .build();
         answerDao.likeAnswer(answerId);
+        // 增加话题用户的点赞数量
         userDao.incrPriaseNum(answerOptional.get().getUserId());
         likeRecordDao.save(likeRecord);
         return ResponseMsg.success200(true);

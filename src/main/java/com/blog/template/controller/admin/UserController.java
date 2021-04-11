@@ -24,6 +24,7 @@ public class UserController {
 
 
     @PostMapping
+    // 更新用户信息
     public ResponseMsg updateOrSaveUser(@RequestBody UserInfo userInfo) {
         if (userInfo.getId() == null) {
             userInfo.setCreateTime(LocalDateTime.now());
@@ -35,6 +36,7 @@ public class UserController {
 
 
     @DeleteMapping("/{userId}")
+    // 根据用户id删除用户
     public ResponseMsg delUserById(@PathVariable("userId") Long userId) {
         userService.delUserById(userId);
         return ResponseMsg.success200("请求成功");
@@ -42,6 +44,7 @@ public class UserController {
 
 
     @GetMapping()
+    // 分页模糊搜索用户信息
     public ResponseMsg findUserList(@RequestParam(defaultValue = "1") Integer page,
                                     @RequestParam(defaultValue = "10") Integer pageSize,
                                     UserSearchVo userSearchVo){

@@ -48,18 +48,22 @@ public class TopicController {
     @ApiOperation("topic")
     @GetMapping
     @PassToken
+    // 获取话题信息
     public ResponseMsg topic(@RequestParam Long topicId) {
+        // 根据话题id从数据读取话题信息
         Optional<Topic> topic = topicDao.findById(topicId);
         if (!topic.isPresent()){
             throw new CustomerException("the topic title has not exited!");
         }
 
+        // 获取用户信息，根据用户id
         Optional<UserInfo> userInfoOptional = userDao.findById(topic.get().getUserId());
 
         if (!userInfoOptional.isPresent()){
             throw new CustomerException("the user has not exited!");
         }
 
+        // 封装话题信息
         TopicListElemVo topicListElem = TopicListElemVo.builder()
                 .topicId(topic.get().getId())
                 .avatar(userInfoOptional.get().getAvatar())
@@ -77,7 +81,9 @@ public class TopicController {
     @ApiOperation("create topic")
     @PostMapping
     @UserLoginToken
+    // 创建话题
     public ResponseMsg createTopic(@RequestBody CreateTopicReq createTopicReq) {
+        // 判断话题相关参数的合法性
         if (topicDao.findByTitle(createTopicReq.getTitle()).isPresent()) {
             throw new CustomerException("the topic title has exited!");
         }
@@ -90,13 +96,14 @@ public class TopicController {
             throw new CustomerException("please select one category");
         }
 
+        // 封装话题信息
         Topic topic = Topic.builder()
                 .userId(UserUtil.getUser().getId())
                 .categoryId(createTopicReq.getCategoryId()).title(createTopicReq.getTitle())
                 .createTime(LocalDateTime.now())
                 .coverImg(createTopicReq.getCoverImg())
                 .build();
-
+        // 保存话题信息
         topicDao.save(topic);
 
         return ResponseMsg.success200("create topic success");

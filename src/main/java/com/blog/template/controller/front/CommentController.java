@@ -46,6 +46,7 @@ public class CommentController {
     @ApiOperation("comment list")
     @GetMapping("list")
     @PassToken
+    // 评论列表
     public ResponseMsg commentList(@RequestParam(required = false) Long answerId) {
 
         UserInfo currentUser = UserUtil.getUser();
@@ -54,6 +55,7 @@ public class CommentController {
 
         List<Comment> commentList = new ArrayList<>();
 
+        // 获取回答下面的评论列表
         commentList = commentDao.findByAnswerId(answerId);
 
 
@@ -61,6 +63,7 @@ public class CommentController {
             return ResponseMsg.success200(resp);
         }
 
+        // 获取评论列表的用户信息
         List<Long> userIdList = new ArrayList<>();
         commentList.forEach((comment) -> {
             userIdList.addAll(Arrays.asList(comment.getFromUserId(), comment.getToUserId()));
@@ -77,6 +80,8 @@ public class CommentController {
             commentIdList.add(comment.getId());
         });
 
+
+        // 获取评论的点赞记录
         HashMap<Long, Boolean> likeRecordMap = new HashMap<>();
         if (currentUser != null) {
             List<LikeRecord> likeRecordList = likeRecordDao.
@@ -92,6 +97,7 @@ public class CommentController {
 
         }
 
+        // 封装评论列表
         for (Comment comment :
                 commentList) {
             UserInfo fromUser = userMap.get(comment.getFromUserId());
@@ -127,8 +133,10 @@ public class CommentController {
     @ApiOperation("add comment")
     @PostMapping("create_comment")
     @UserLoginToken
+    // 创建评论
     public ResponseMsg createComment(@RequestBody CreateCommentReq createCommentReq) {
 
+        // 参数合法判断
         if (createCommentReq.getCommentId() == 0 && createCommentReq.getAnswerId() == 0) {
             throw new CustomerException("comment id and answer id can not both zero");
         }
@@ -140,6 +148,7 @@ public class CommentController {
         Long toUserId = 0L;
         int level = 0;
 
+        // 判断是创建二级评论还是一级评论
         if (createCommentReq.getCommentId() != 0) {
             Optional<Comment> commentOptional = commentDao.findById(createCommentReq.getCommentId());
             if (!commentOptional.isPresent()) {
@@ -162,6 +171,7 @@ public class CommentController {
         }
 
 
+        // 封装评论信息
         Comment comment = Comment.builder()
                 .fromUserId(UserUtil.getUser().getId())
                 .toUserId(toUserId)
@@ -180,7 +190,9 @@ public class CommentController {
             comment.setLevel(0);
         }
 
+        // 添加评论
         commentDao.save(comment);
+        // 回答的评论人数量加1
         answerDao.incrCommentNum(createCommentReq.getAnswerId());
         return ResponseMsg.success200("create comment success");
     }
@@ -190,22 +202,28 @@ public class CommentController {
     @GetMapping("praise_comment")
     @UserLoginToken
     @Transactional
+    // 点赞评论
     public ResponseMsg praiseAnswer(@RequestParam Long commentId) {
+        // 获取当前用户信息
         UserInfo currentUser = UserUtil.getUser();
+        // 获取当前用户对于评论是否点赞的记录
         Optional<LikeRecord> likeRecordOptional =
                 likeRecordDao.findByRecordTypeAndUserIdAndRecordId(Constant.LikeRecordType.COMMENT_LIKE_RECORD_TYPE,
                         currentUser.getId(), commentId);
+        // 如果此前是点赞，则此次操作更新未不点赞
         if (likeRecordOptional.isPresent() && likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(false);
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(false);
         }
 
+        // 如果此次是未点赞，则此次操作更新为点赞
         if (likeRecordOptional.isPresent() && !likeRecordOptional.get().getIsLike()) {
             likeRecordOptional.get().setIsLike(true);
             likeRecordDao.save(likeRecordOptional.get());
             return ResponseMsg.success200(true);
         }
+        // 更新点赞记录
         LikeRecord likeRecord = LikeRecord
                 .builder()
                 .isLike(true)

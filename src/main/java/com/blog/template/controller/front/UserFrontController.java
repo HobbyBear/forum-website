@@ -35,6 +35,7 @@ public class UserFrontController {
 
     @PassToken
     @PostMapping("/regByPwd")
+    // 注册用户
     public ResponseMsg regByPwd(@RequestBody RegPwdRequest regPwdRequest) throws MessagingException {
         userService.regByPwd(regPwdRequest);
         return ResponseMsg.success200("register success");
@@ -42,16 +43,19 @@ public class UserFrontController {
 
     @PostMapping("/login")
     @PassToken
+    // 用户登陆验证
     public ResponseMsg login(@RequestBody LoginRequest loginRequest,
                              HttpServletResponse response, HttpSession session) throws MessagingException {
+       // 获取用户信息
         Optional<UserInfo> userInfo = userDao.findByUsername(loginRequest.getUsername());
         if (!userInfo.isPresent()) {
             throw new CustomerException("username find fail !");
         }
+        // 对比用户名密码
         if (!userInfo.get().getPassword().equals(loginRequest.getPwd())) {
             throw new CustomerException("password find fail !");
         }
-
+        // session保存登陆认证信息
         session.setAttribute(Constant.SessionKey.SESSION_USERID,userInfo.get().getId());
         return ResponseMsg.success200("login success");
     }
@@ -59,6 +63,7 @@ public class UserFrontController {
 
     @GetMapping
     @UserLoginToken
+    // 根据用户id获取用户信息
     public ResponseMsg userInfo() {
         UserInfo userInfo = UserUtil.getUser();
         UserInfoVo userInfoVo = UserInfoVo
@@ -74,6 +79,7 @@ public class UserFrontController {
 
     @GetMapping("logOut")
     @UserLoginToken
+    // 退出登陆
     public ResponseMsg logOut(HttpSession session){
         session.invalidate();
         return ResponseMsg.success200("logOut success");
